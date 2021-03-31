@@ -43,30 +43,53 @@ app.post('/', async(req, res)=> {
               var csv_with_ext = csv_without_ext.concat(' .csv') // there is a space before .csv
               var csvFilePath = `./reports-excel-format/${csv_with_ext}`
               
-            function getFile(path, timeout=1000) {
-              const intervalObj = setInterval(function() {
-                          
-                const file = path;
-                const fileExists = fs.existsSync(file);
+              function getFile(path, timeout=1000) {
+                const intervalObj = setInterval(function() {
             
-                console.log('Checking for: ', file);
-                console.log('Exists: ', fileExists);
+                    const file = path;
+                    const fileExists = fs.existsSync(file);
             
-                if (fileExists) {                       
-                  csv()
-                  .fromFile(csvFilePath)
-                  .then((jsonObj)=>{
-                  // console.log(jsonObj)    
-                  res.send(jsonObj)
-                  })
+                    console.log('Checking for: ', file);
+                    console.log('Exists: ', fileExists);
+            
+                    if (fileExists) {
+                        
+                        csv()
+                        .fromFile(csvFilePath)
+                        .then((jsonObj)=>{
+                        // console.log(jsonObj)    
+                        res.send(jsonObj)
 
-                  clearInterval(intervalObj)
-                  console.log('file generated exists')
-                }
-              }, timeout)
+                        })
+
+                        clearInterval(intervalObj)
+                        console.log('file generated exists')
+                        
+                    }
+                }, timeout);
             }
-            getFile(csvFilePath)
+            
+                getFile('./reports-excel-format/MOST_IMPORTANT_FORMAT .csv')
+            
 
+              
+              /*
+                
+              if (fs.existsSync(`./reports-excel-format/${csvFilePath}`)) {
+                // Do something
+                console.log('file generated')
+                csv()
+                .fromFile(csvFilePath)
+                .then((jsonObj)=>{
+                res.send(jsonObj)
+
+              })
+
+              } else{
+                console.log('not yet generated')
+                
+              }
+              */
               
             }   
             
@@ -77,6 +100,6 @@ app.post('/', async(req, res)=> {
 
 })
 
-app.listen(port, 'localhost',  () => {
+app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
