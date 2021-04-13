@@ -1,82 +1,71 @@
+// the following code does not run after dockerizing
 const express = require('express')
 const upload = require('express-fileupload')
-const Shell = require('node-powershell')
+const exec = require('child_process').exec
 const app = express()
-const port = 3000
-const csv = require('csvtojson')
-const fs = require("fs")
+// const Shell = require('node-powershell')
+var R = require("r-script");
+const port = 3005
+
 app.use(upload()) // this function allows to use the express-fileupload
+
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html')
 })
 
 // the funciton below allows to move the uploaded file in 'uploads' folder and prints its name on server
 app.post('/', async(req, res)=> {
-    if(req.files) {
 
-      console.log('file has been uploaded')
-      var file = req.files.file      
-      const filename = file.name
-      console.log(`uploaded filename is ${filename}`)
-        file.mv('./uploads/' + filename, async function(err){
-            if (err){
-                res.send(err)
-            } else {
-              
-              const ps = new Shell({
-                executionPolicy: 'Bypass',
-                noProfile: true
-              });
+  if(req.files) {
+    var file = req.files.file      
+    const filename = file.name
+    console.log(`uploaded filename is ${filename}`)
 
-              await ps.addCommand(`Rscript c:\\Users\\Shubham\\Documents\\blood-report-parsing\\blood-parsing.R ${filename}`);
-              
-              ps.invoke()
-              .then(output => {
-                console.log(output);
-              })
-              .catch(err => {
-                console.log(err);
-              });
-              
-              
-              var csv_without_ext = filename.substr(0, filename.lastIndexOf('.'));
-              var csv_with_ext = csv_without_ext.concat(' .csv') // there is a space before .csv
-              var csvFilePath = `./reports-excel-format/${csv_with_ext}`
-              
-            function getFile(path, timeout=1000) {
-              const intervalObj = setInterval(function() {
-                          
-                const file = path;
-                const fileExists = fs.existsSync(file);
-            
-                console.log('Checking for: ', file);
-                console.log('Exists: ', fileExists);
-            
-                if (fileExists) {                       
-                  csv()
-                  .fromFile(csvFilePath)
-                  .then((jsonObj)=>{
-                  // console.log(jsonObj)    
-                  res.send(jsonObj)
-                  })
+    // to download and move file in the uploads folder
+    file.mv('./uploads/' + filename, async function(err){
+      if (err){
+          res.send(err)
+      } else { 
 
-                  clearInterval(intervalObj)
-                  console.log('file generated exists')
-                }
-              }, timeout)
-            }
-            getFile(csvFilePath)
-
-              
-            }   
-            
+        
+        exec(`Rscript blood-report-parsing.R ${filename}`, (e, stdout, stderr) => {
+          if(e instanceof Error){
+              console.error(e)
+              throw e
+          }
+          console.log('command:', stdout)
+          console.log('stderr : ', stderr)
+          const ab = JSON.parse(JSON.parse(stdout.substring(3)))
+          res.send({data : ab})
         })
+        
 
-    }
+        /*
+        const ps = new Shell({
+          executionPolicy: 'Bypass',
+          noProfile: true
+        });
+
+        ps.addCommand('Rscript blood-report-parsing.R');
+        
+        ps.invoke()
+        .then(output => {
+          console.log(output);
+          res.send(output)
+        })
+        .catch(err => {
+          console.log(err);
+        });
+        */
+
+      }
+    })
+  }
+    
 
 
 })
-
-app.listen(port, 'localhost',  () => {
+const host = '0.0.0.0'
+app.listen(port, host,  () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
