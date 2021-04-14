@@ -1,0 +1,50 @@
+<h1>BLOOD REPORT PARSING</h1>
+<!DOCTYPE html> 
+<html>
+<head>
+    <title> 
+        BLOOD REPORT PARSING
+    </title> 
+      
+    <style> 
+        h1 { 
+            color: green; 
+        } 
+        h3 { 
+            color: crimson; 
+        } 
+        body { 
+            text-align: center; 
+        } 
+    </style> 
+
+    <script language="JavaScript">
+        var formOK = false;
+    
+        function validatePDF(objFileControl){
+        var file = objFileControl.value;
+        var len = file.length;
+        var ext = file.slice(len - 4, len);
+        if(ext.toUpperCase() == ".PDF"){
+            formOK = true;
+        }
+        else{
+            formOK = false;
+            alert("Only PDF files allowed.");
+        }
+    }
+    </script>
+
+
+
+</head>
+
+<body>
+
+    <form name="MyForm"  method="POST" onsubmit="return formOK" action="/" enctype="multipart/form-data">
+        <input type="file" name="file" accept="application/pdf,application/vnd.ms-excel" onchange="validatePDF(this)"/>
+        <input type = "submit" value= "Upload">
+    </form>
+
+</body>
+</html>

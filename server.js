@@ -10,7 +10,7 @@ const port = 3005
 app.use(upload()) // this function allows to use the express-fileupload
 
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html')
+    res.sendFile(__dirname + '/pdf-upload.html')
 })
 
 // the funciton below allows to move the uploaded file in 'uploads' folder and prints its name on server
@@ -38,25 +38,6 @@ app.post('/', async(req, res)=> {
           const ab = JSON.parse(JSON.parse(stdout.substring(3)))
           res.send({data : ab})
         })
-        
-
-        /*
-        const ps = new Shell({
-          executionPolicy: 'Bypass',
-          noProfile: true
-        });
-
-        ps.addCommand('Rscript blood-report-parsing.R');
-        
-        ps.invoke()
-        .then(output => {
-          console.log(output);
-          res.send(output)
-        })
-        .catch(err => {
-          console.log(err);
-        });
-        */
 
       }
     })

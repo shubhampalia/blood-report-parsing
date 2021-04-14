@@ -1,6 +1,39 @@
-<h1> BLOOD-REPORT PARSING </h1>
+<!DOCTYPE html> 
+<html> 
+  
+<head> 
+    <title> 
+        HTML input type file
+    </title> 
+      
+    <style> 
+        h1 { 
+            color: green; 
+        } 
+        h3 { 
+            color: crimson; 
+        } 
+        body { 
+            text-align: center; 
+        } 
+    </style> 
+</head> 
+  
+<body> 
+    <h1> 
+        Blood Report Parsing 
+    </h1> 
+    
+    <h3>
+      Accepts blood report in pdf format only
+    </h3>
 
-<form method="POST" action="/" enctype="multipart/form-data">
-  <input type = "file" name = "file"/>
-  <input type = "submit" value= "Upload">
-</form>
+    <form method="POST" action="/" enctype="multipart/form-data">
+      <input type="file" name="file" accept="application/pdf,application/vnd.ms-excel" />
+      <input type = "submit" value= "Upload">
+    </form>
+      
+    <p id="submit_text"></p>
+</body> 
+  
+</html> 
